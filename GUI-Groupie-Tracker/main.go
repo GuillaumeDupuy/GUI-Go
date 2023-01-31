@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"image"
 	"io/ioutil"
 	"net/http"
 
@@ -11,13 +10,16 @@ import (
 	"strings"
 	// "strconv"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/app"
+	// "image/color"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 
-	// "fyne.io/fyne/container"
-	"fyne.io/fyne/layout"
+	// "fyne.io/fyne/v2/container"
+	// "fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2/widget"
 )
 
 /*--------------------------------------------------------------------------------------------
@@ -100,7 +102,8 @@ func main() {
 		})
 
 		var buttons []fyne.CanvasObject
-		container := fyne.NewContainerWithLayout(layout.NewVBoxLayout())
+		content := container.New(layout.NewVBoxLayout())
+		// image := canvas.NewImageFromFile("artist.png")
 
 		menuItem2 := fyne.NewMenuItem("Artists", func() {
 			label.SetText("Liste des artistes")
@@ -109,11 +112,16 @@ func main() {
 				buttons = append(buttons, widget.NewButton(artist, func(i int, artist string) func() {
 				  return func() {
 					newLabel.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : " + artists[i].LOCATIONS + "\n" + "Dates de concerts : " + artists[i].CONCERT_DATE + "\n" + "Relations : " + artists[i].RELATION)
+					// r, _ := fyne.LoadResourceFromURLString(artists[i].IMAGE)
+					// image = canvas.NewImageFromResource(r)
+					// image.FillMode = canvas.ImageFillOriginal
 				  }
 				}(i, artist)))
-				container.Add(buttons[i])
-				container.Add(newLabel)
+				content.Add(buttons[i])	
+				content.Add(newLabel)
+				// content.Add(image)
 			}
+			
 		})
 
 		newMenu1 := fyne.NewMenu("Menu", menuItem1, menuItem2)
@@ -121,7 +129,7 @@ func main() {
 		menu := fyne.NewMainMenu(newMenu1)
 
 		w.SetMainMenu(menu)
-		scroll := widget.NewScrollContainer(fyne.NewContainerWithLayout(layout.NewVBoxLayout(), label ,fyne.NewContainerWithLayout(layout.NewGridLayout(len(buttons)+1), container)))
+		scroll := container.NewVScroll(container.New(layout.NewVBoxLayout(), label ,container.New(layout.NewGridLayout(len(buttons)+1), content)))
 		w.SetContent(scroll)
 
 
