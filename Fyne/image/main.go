@@ -1,21 +1,23 @@
 package main
-
+ 
+// import fyne
 import (
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
+    "fyne.io/fyne/v2"
+    "fyne.io/fyne/v2/app"
+    "fyne.io/fyne/v2/canvas"
 )
-
+ 
 func main() {
-	myApp := app.New()
-	w := myApp.NewWindow("Image")
-
-	// image := canvas.NewImageFromResource(theme.FyneLogo())
-	// image := canvas.NewImageFromURI(uri)
-	// image := canvas.NewImageFromImage(src)
-	// image := canvas.NewImageFromReader(reader, name)
-	image := canvas.NewImageFromFile("artist.png")
-	image.FillMode = canvas.ImageFillOriginal
-	w.SetContent(image)
-
-	w.ShowAndRun()
+    // new app
+    a := app.New()
+    // New title and window
+    w := a.NewWindow("Loading images from internet")
+    // resize
+    w.Resize(fyne.NewSize(400, 400))
+    // loading image form url
+    r, _ := fyne.LoadResourceFromURLString("https://picsum.photos/200")
+    img := canvas.NewImageFromResource(r)
+    w.SetContent(img)
+    //
+    w.ShowAndRun()
 }
