@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"image"
 	"io/ioutil"
 	"net/http"
 
@@ -15,8 +16,8 @@ import (
 
 	// "fyne.io/fyne/container"
 	"fyne.io/fyne/layout"
-	"fyne.io/fyne/widget"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/widget"
 )
 
 /*--------------------------------------------------------------------------------------------
@@ -104,15 +105,14 @@ func main() {
 		menuItem2 := fyne.NewMenuItem("Artists", func() {
 			label.SetText("Liste des artistes")
 			for i, artist := range artistsData {
-				label := widget.NewLabel("")
-				button := widget.NewButton(artist, func() {
-					label.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : " + artists[i].LOCATIONS + "\n" + "Dates de concerts : " + artists[i].CONCERT_DATE + "\n" + "Relations : " + artists[i].RELATION)
-				})
-				buttons = append(buttons, label, button)
-			}
-
-			for _, button := range buttons {
-				container.Add(button)
+				newLabel := widget.NewLabel("")
+				buttons = append(buttons, widget.NewButton(artist, func(i int, artist string) func() {
+				  return func() {
+					newLabel.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : " + artists[i].LOCATIONS + "\n" + "Dates de concerts : " + artists[i].CONCERT_DATE + "\n" + "Relations : " + artists[i].RELATION)
+				  }
+				}(i, artist)))
+				container.Add(buttons[i])
+				container.Add(newLabel)
 			}
 		})
 
