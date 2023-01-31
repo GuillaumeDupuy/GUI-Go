@@ -128,10 +128,14 @@ func main() {
 		Artiststext := canvas.NewText("Voici la liste de tout les artistes", color.White)
 		Artiststext.Alignment = fyne.TextAlignCenter
 
+		resource, _ := fyne.LoadResourceFromURLString("https://groupietrackers.herokuapp.com/api/images/queen.jpeg")
+		Artistimage := canvas.NewImageFromResource(resource)
+		Artistimage.FillMode = canvas.ImageFillOriginal
+
 		content := container.NewVBox(
 			Artistslabel,
 			Artiststext,
-			returnline,
+			Artistimage,
 		)
 
 		scroll := container.NewVScroll(container.New(layout.NewVBoxLayout(), content))
@@ -143,12 +147,12 @@ func main() {
 				buttons = append(buttons, widget.NewButton(artist, func(i int, artist string) func() {
 				  return func() {
 					newLabel.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : " + artists[i].LOCATIONS + "\n" + "Dates de concerts : " + artists[i].CONCERT_DATE + "\n" + "Relations : " + artists[i].RELATION)
-					// resource, _ := fyne.LoadResourceFromURLString(artists[i].IMAGE)
-					// artistImage := canvas.NewImageFromResource(resource)
-					// artistImage.FillMode = canvas.ImageFillOriginal
+					resource, _ := fyne.LoadResourceFromURLString(artists[i].IMAGE)
+					Artistimage.Resource = resource
+					Artistimage.Refresh()
 				  }
 				}(i, artist)))
-				// content.Add(artistImage)
+				// content.Add(Artistimage)
 				content.Add(buttons[i])
 				content.Add(newLabel)
 				content.Add(returnline)
