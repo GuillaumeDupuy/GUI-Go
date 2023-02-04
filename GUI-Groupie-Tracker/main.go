@@ -286,10 +286,86 @@ func main() {
 		w.SetContent(scroll)
 	})
 
-	newMenu1 := fyne.NewMenu("Menu", menuItem1, menuItem2)
+	annoncelabel := widget.NewLabel("Vous pouvez rechercher un artiste en écrivant son nom dans la barre de recherche ci-dessous : \n*soit le nom complet \n*soit le début ")
+	searchArtist := widget.NewEntry()
+
+	filterlabel := widget.NewLabel("")
+	otherartistlabel := widget.NewLabel("")
+	newfilter := widget.NewLabel("")
+
+	var filteredArtists []string
+
+	filterbutton := widget.NewButton("Filter", func() {
+		newfilter.SetText("")
+		filteredArtists = filterArtists(artistsData, searchArtist.Text)
+		filterlabel.SetText(strings.Join(filteredArtists, ", "))
+		otherartistlabel.SetText("Possible résultat de votre recherche : " + strings.Join(filteredArtists, ", ") + "\nEcrivez le nom complet de l'artiste pour voir ses informations si ce n'est pas le bon artiste.")
+
+		for i := range artistsData {
+
+			var artistLocations []string
+			var artistDates []string
+			var artistLocationsVille []string
+			var artistLocationsPays []string
+
+			fmt.Println(artists[i].MEMBERS[0])
+
+			if strings.EqualFold(filterlabel.Text,artists[i].NAME) {
+				for _, loc := range locations.Index {
+					if loc.ID == artists[i].ID {
+						artistLocations = append(artistLocations, loc.LOCATIONS...)
+						break
+					}
+				}
+
+				for _, location := range artistLocations {
+					splitLocation := strings.Split(location, "-")
+					artistLocationsVille = append(artistLocationsVille, splitLocation[0])
+					artistLocationsPays = append(artistLocationsPays, splitLocation[1])
+				}
+
+				for _, dates := range dates.Index {
+					if dates.ID == artists[i].ID {
+						artistDates = append(artistDates, dates.DATES...)
+						break
+					}
+				}
+
+				for i, date := range artistDates {
+					artistDates[i] = strings.Replace(date, "*", "", -1)
+				}
+
+				newfilter.SetText("Nom du groupe : " + filterlabel.Text + "\n" +"Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : \n - Ville : " + strings.Join(artistLocationsVille, ", ") + "\n - Pays : " + strings.Join(artistLocationsPays, ", ") + "\n" + "Dates de concerts : " + strings.Join(artistDates, ", ") + "\n" + "Relations : " + artists[i].RELATION)
+			}
+		}
+	})
+
+	search := container.NewVBox(
+		annoncelabel,
+		searchArtist,
+		filterbutton,
+		otherartistlabel,
+		newfilter,
+	)
+
+	menuItem3 := fyne.NewMenuItem("Recherche", func() {
+		w.SetContent(search)
+	})
+
+	newMenu1 := fyne.NewMenu("Menu", menuItem1, menuItem2,menuItem3)
 
 	menu := fyne.NewMainMenu(newMenu1)
 
 	w.SetMainMenu(menu)
 	w.ShowAndRun()
+}
+
+func filterArtists(artists []string, searchTerm string) []string {
+	filteredArtists := []string{}
+	for _, artist := range artists {
+	  if strings.Contains(strings.ToLower(artist), strings.ToLower(searchTerm)) {
+		filteredArtists = append(filteredArtists, artist)
+	  }
+	}
+	return filteredArtists
 }
