@@ -20,6 +20,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"fyne.io/fyne/v2/data/binding"
 )
 
 /*--------------------------------------------------------------------------------------------
@@ -286,63 +287,94 @@ func main() {
 		w.SetContent(scroll)
 	})
 
-	annoncelabel := widget.NewLabel("Vous pouvez rechercher un artiste en écrivant son nom dans la barre de recherche ci-dessous : \n*soit le nom complet \n*soit le début ")
+	annoncelabel := widget.NewLabel("Vous pouvez rechercher un artiste en écrivant son nom dans la barre de recherche ci-dessous : \n*soit le nom complet de l'artiste \n*soit le début du nom")
 	searchArtist := widget.NewEntry()
 
 	filterlabel := widget.NewLabel("")
 	otherartistlabel := widget.NewLabel("")
 	newfilter := widget.NewLabel("")
-
 	var filteredArtists []string
+
+	f := 1000.0
+	data := binding.BindFloat(&f)
+	slider := widget.NewSliderWithData(1950, 2020, data)
+	createlabel := widget.NewLabelWithData(
+		binding.FloatToStringWithFormat(data, "%.0f"),
+	)
+
+	slider.Hidden = true
+	createlabel.Hidden = true
+
+	// createdate, _ := strconv.Atoi(createlabel.Text)
 
 	filterbutton := widget.NewButton("Filter", func() {
 		newfilter.SetText("")
 		filteredArtists = filterArtists(artistsData, searchArtist.Text)
 		filterlabel.SetText(strings.Join(filteredArtists, ", "))
-		otherartistlabel.SetText("Possible résultat de votre recherche : " + strings.Join(filteredArtists, ", ") + "\nEcrivez le nom complet de l'artiste pour voir ses informations si ce n'est pas le bon artiste.")
 
-		for i := range artistsData {
+		if len(filterlabel.Text) <= 654 {
 
-			var artistLocations []string
-			var artistDates []string
-			var artistLocationsVille []string
-			var artistLocationsPays []string
+			otherartistlabel.SetText("Possible résultat de votre recherche : " + strings.Join(filteredArtists, ", ") + "\nEcrivez le nom complet de l'artiste pour voir ses informations si ce n'est pas le bon artiste.")
 
-			fmt.Println(artists[i].MEMBERS[0])
+			for i := range artistsData {
 
-			if strings.EqualFold(filterlabel.Text,artists[i].NAME) {
-				for _, loc := range locations.Index {
-					if loc.ID == artists[i].ID {
-						artistLocations = append(artistLocations, loc.LOCATIONS...)
-						break
+				var artistLocations []string
+				var artistDates []string
+				var artistLocationsVille []string
+				var artistLocationsPays []string
+
+				if strings.EqualFold(filterlabel.Text,artists[i].NAME) {
+					for _, loc := range locations.Index {
+						if loc.ID == artists[i].ID {
+							artistLocations = append(artistLocations, loc.LOCATIONS...)
+							break
+						}
 					}
-				}
 
-				for _, location := range artistLocations {
-					splitLocation := strings.Split(location, "-")
-					artistLocationsVille = append(artistLocationsVille, splitLocation[0])
-					artistLocationsPays = append(artistLocationsPays, splitLocation[1])
-				}
-
-				for _, dates := range dates.Index {
-					if dates.ID == artists[i].ID {
-						artistDates = append(artistDates, dates.DATES...)
-						break
+					for _, location := range artistLocations {
+						splitLocation := strings.Split(location, "-")
+						artistLocationsVille = append(artistLocationsVille, splitLocation[0])
+						artistLocationsPays = append(artistLocationsPays, splitLocation[1])
 					}
-				}
 
-				for i, date := range artistDates {
-					artistDates[i] = strings.Replace(date, "*", "", -1)
-				}
+					for _, dates := range dates.Index {
+						if dates.ID == artists[i].ID {
+							artistDates = append(artistDates, dates.DATES...)
+							break
+						}
+					}
 
-				newfilter.SetText("Nom du groupe : " + filterlabel.Text + "\n" +"Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : \n - Ville : " + strings.Join(artistLocationsVille, ", ") + "\n - Pays : " + strings.Join(artistLocationsPays, ", ") + "\n" + "Dates de concerts : " + strings.Join(artistDates, ", ") + "\n" + "Relations : " + artists[i].RELATION)
+					for i, date := range artistDates {
+						artistDates[i] = strings.Replace(date, "*", "", -1)
+					}
+
+					newfilter.SetText("Nom du groupe : " + filterlabel.Text + "\n" +"Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : \n - Ville : " + strings.Join(artistLocationsVille, ", ") + "\n - Pays : " + strings.Join(artistLocationsPays, ", ") + "\n" + "Dates de concerts : " + strings.Join(artistDates, ", ") + "\n" + "Relations : " + artists[i].RELATION)
+				}
 			}
+		} else {
+			newfilter.SetText("Veuillez écrire quelque chose dans la barre de recherche")
+		}
+	})
+
+	annoncelabel2 := widget.NewLabel("Vous pouvez filtrer les artistes par date de création en utilisant le curseur ci-dessous :")
+
+	checkbox := widget.NewCheck("Filtrer par date de création", func(plot bool) {
+		if plot {
+			createlabel.Show()
+			slider.Show()
+		} else {
+			createlabel.Hide()
+			slider.Hide()
 		}
 	})
 
 	search := container.NewVBox(
 		annoncelabel,
 		searchArtist,
+		annoncelabel2,
+		checkbox,
+		createlabel,
+		slider,
 		filterbutton,
 		otherartistlabel,
 		newfilter,
@@ -369,3 +401,13 @@ func filterArtists(artists []string, searchTerm string) []string {
 	}
 	return filteredArtists
 }
+
+// func filterArtistsDate(artists []Artists, searchTerm int) []string {
+// 	filteredArtists := []string{}
+// 	for i := range artists {
+// 		if artists[i].CREA_DATE == searchTerm {
+// 			filteredArtists = append(filteredArtists, artists[i].NAME)
+// 		}
+// 	}
+// 	return filteredArtists
+// }
