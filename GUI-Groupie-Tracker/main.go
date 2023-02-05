@@ -8,7 +8,7 @@ import (
 
 	// "time"
 	"strings"
-	// "strconv"
+	"strconv"
 
 	"image/color"
 	"fyne.io/fyne/v2"
@@ -305,11 +305,16 @@ func main() {
 	slider.Hidden = true
 	createlabel.Hidden = true
 
-	// createdate, _ := strconv.Atoi(createlabel.Text)
+	checkcheckbox := false
 
 	filterbutton := widget.NewButton("Filter", func() {
 		newfilter.SetText("")
-		filteredArtists = filterArtists(artistsData, searchArtist.Text)
+		if !checkcheckbox{
+			filteredArtists = filterArtists(artistsData, searchArtist.Text)
+		}else {
+			createdate, _ := strconv.Atoi(createlabel.Text)
+			filteredArtists = filterArtistsDate(artists, createdate)
+		}
 		filterlabel.SetText(strings.Join(filteredArtists, ", "))
 
 		if len(filterlabel.Text) <= 654 {
@@ -360,9 +365,11 @@ func main() {
 
 	checkbox := widget.NewCheck("Filtrer par date de création", func(plot bool) {
 		if plot {
+			checkcheckbox = true
 			createlabel.Show()
 			slider.Show()
 		} else {
+			checkcheckbox = false
 			createlabel.Hide()
 			slider.Hide()
 		}
@@ -402,12 +409,12 @@ func filterArtists(artists []string, searchTerm string) []string {
 	return filteredArtists
 }
 
-// func filterArtistsDate(artists []Artists, searchTerm int) []string {
-// 	filteredArtists := []string{}
-// 	for i := range artists {
-// 		if artists[i].CREA_DATE == searchTerm {
-// 			filteredArtists = append(filteredArtists, artists[i].NAME)
-// 		}
-// 	}
-// 	return filteredArtists
-// }
+func filterArtistsDate(artists []Artists, searchTerm int) []string {
+	filteredArtists := []string{}
+	for i := range artists {
+		if artists[i].CREA_DATE == searchTerm {
+			filteredArtists = append(filteredArtists, artists[i].NAME)
+		}
+	}
+	return filteredArtists
+}
