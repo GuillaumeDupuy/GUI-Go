@@ -261,7 +261,7 @@ func main() {
 
 			var artistLocations []string
 			var artistDates []string
-			// var artistRelations []string
+			var artistRelations []string
 			var artistLocationsVille []string
 			var artistLocationsPays []string
 			
@@ -277,6 +277,7 @@ func main() {
 					artistDates = nil
 					artistLocationsVille = nil
 					artistLocationsPays = nil
+					artistRelations = nil
 
 					for _, loc := range locations.Index {
 						if loc.ID == artists[i].ID {
@@ -302,14 +303,17 @@ func main() {
 						artistDates[i] = strings.Replace(date, "*", "", -1)
 					}
 
-					// for _, relations := range relations.Index {
-					// 	if relations.ID == artists[i].ID {
-					// 		artistRelations = append(artistRelations, relations.DATESLOCAT[artistLocations[i]]...)
-					// 		break
-					// 	}
-					// }
+					for _, relations := range relations.Index {
+						if relations.ID == artists[i].ID {
+							for location, dateLoc := range relations.DATESLOCAT {
+								for _, date := range dateLoc {
+									artistRelations = append(artistRelations, location + " : " + date)
+								}
+							}
+						}
+					}
 
-					newLabel.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : \n - Ville : " + strings.Join(artistLocationsVille, ", ") + "\n - Pays : " + strings.Join(artistLocationsPays, ", ") + "\n" + "Dates de concerts : " + strings.Join(artistDates, ", ") + "\n" + "Relations : " + artists[i].RELATION)
+					newLabel.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : \n - Ville : " + strings.Join(artistLocationsVille, ", ") + "\n - Pays : " + strings.Join(artistLocationsPays, ", ") + "\n" + "Dates de concerts : " + strings.Join(artistDates, ", ") + "\n" + "Relations : " + strings.Join(artistRelations, ", "))
 					resource, _ = fyne.LoadResourceFromURLString(artists[i].IMAGE)
 					Artistimage.Resource = resource
 					Artistimage.Refresh()
