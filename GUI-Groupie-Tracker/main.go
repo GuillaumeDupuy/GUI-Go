@@ -287,12 +287,13 @@ func main() {
 		w.SetContent(scroll)
 	})
 
-	annoncelabel := widget.NewLabel("Vous pouvez rechercher un artiste en écrivant son nom dans la barre de recherche ci-dessous : \n*soit le nom complet de l'artiste \n*soit le début du nom")
+	annoncelabel := widget.NewLabel("Vous pouvez rechercher un artiste en écrivant son nom dans la barre de recherche ci-dessous : \n*soit le nom complet de l'artiste \n*soit le début du nom \n*soit le nom complet du membre \n*soit le début du nom")
 	searchArtist := widget.NewEntry()
 
 	filterlabel := widget.NewLabel("")
 	otherartistlabel := widget.NewLabel("")
 	newfilter := widget.NewLabel("")
+
 	var filteredArtists []string
 
 	f := 1000.0
@@ -306,14 +307,18 @@ func main() {
 	createlabel.Hidden = true
 
 	checkcheckbox := false
+	checkcheckcheckbox := false
 
-	filterbutton := widget.NewButton("Filter", func() {
+	filterbutton := widget.NewButton("Filtrer", func() {
 		newfilter.SetText("")
-		if !checkcheckbox{
-			filteredArtists = filterArtists(artistsData, searchArtist.Text)
-		}else {
+		if checkcheckbox{
 			createdate, _ := strconv.Atoi(createlabel.Text)
 			filteredArtists = filterArtistsDate(artists, createdate)
+		}else if checkcheckcheckbox {
+		filteredArtists = filterArtistsMembers(artists, searchArtist.Text)
+		fmt.Println(filteredArtists)
+		}else {
+			filteredArtists = filterArtists(artistsData, searchArtist.Text)
 		}
 		filterlabel.SetText(strings.Join(filteredArtists, ", "))
 
@@ -375,9 +380,18 @@ func main() {
 		}
 	})
 
+	checkbox2 := widget.NewCheck("Filtrer par nom de membre", func(plot bool) {
+		if plot {
+			checkcheckcheckbox = true
+		} else {
+			checkcheckcheckbox = false
+		}
+	})
+
 	search := container.NewVBox(
 		annoncelabel,
 		searchArtist,
+		checkbox2,
 		annoncelabel2,
 		checkbox,
 		createlabel,
@@ -414,6 +428,19 @@ func filterArtistsDate(artists []Artists, searchTerm int) []string {
 	for i := range artists {
 		if artists[i].CREA_DATE == searchTerm {
 			filteredArtists = append(filteredArtists, artists[i].NAME)
+		}
+	}
+	return filteredArtists
+}
+
+func filterArtistsMembers(artists []Artists, searchTerm string) []string {
+	filteredArtists := []string{}
+	for i := range artists {
+		for j := range artists[i].MEMBERS {
+			if strings.Contains(strings.ToLower(artists[i].MEMBERS[j]), strings.ToLower(searchTerm)) {
+				filteredArtists = append(filteredArtists, artists[i].NAME)
+				break
+			}
 		}
 	}
 	return filteredArtists
