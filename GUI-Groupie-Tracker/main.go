@@ -2,25 +2,28 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 
 	// "time"
-	"strings"
 	"strconv"
+	"strings"
 
 	"image/color"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 
 	// "fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"fyne.io/fyne/v2/data/binding"
 )
 
 /*--------------------------------------------------------------------------------------------
@@ -79,9 +82,9 @@ func main() {
 
 	Homelabel := widget.NewLabel("Page D'accueil")
 	Artistslabel := widget.NewLabel("")
-	Locationslabel := widget.NewLabel("")
-	Dateslabel := widget.NewLabel("")
-	Relationslabel := widget.NewLabel("")
+	// Locationslabel := widget.NewLabel("")
+	// Dateslabel := widget.NewLabel("")
+	// Relationslabel := widget.NewLabel("")
 
 	var artists []Artists
 	var artistsData []string
@@ -95,21 +98,27 @@ func main() {
 		// Get data from API
 		ArtistsResp, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
 		if err != nil {
-			Artistslabel.SetText("Erreur lors du chargement des données")
+			// Artistslabel.SetText("Erreur lors du chargement des données")
+			errs := errors.New("erreur lors du chargement des données")
+			dialog.ShowError(errs, w)
 			return
 		}
 		defer ArtistsResp.Body.Close()
 
 		ArtistsBody, err := io.ReadAll(ArtistsResp.Body)
 		if err != nil {
-			Artistslabel.SetText("Erreur lors de la lecture des données")
+			// Artistslabel.SetText("Erreur lors de la lecture des données")
+			errs := errors.New("erreur lors de la lecture des données")
+			dialog.ShowError(errs, w)
 			return
 		}
 
 		// Decode data
 		err = json.Unmarshal(ArtistsBody, &artists)
 		if err != nil {
-			Artistslabel.SetText("Erreur lors de la décodage des données")
+			// Artistslabel.SetText("Erreur lors de la décodage des données")
+			errs := errors.New("erreur lors de la décodage des données")
+			dialog.ShowError(errs, w)
 			return
 		}
 
@@ -124,20 +133,26 @@ func main() {
 
 		locationResp, err := http.Get("https://groupietrackers.herokuapp.com/api/locations")
 		if err != nil {
-			Locationslabel.SetText("Erreur lors du chargement des données de lieux")
+			// Locationslabel.SetText("Erreur lors du chargement des données de lieux")
+			errs := errors.New("erreur lors du chargement des données de lieux")
+			dialog.ShowError(errs, w)
 			return
 		}
 		defer locationResp.Body.Close()
 
 		locationBody, err := io.ReadAll(locationResp.Body)
 		if err != nil {
-			Locationslabel.SetText("Erreur lors de la lecture des données de lieux")
+			// Locationslabel.SetText("Erreur lors de la lecture des données de lieux")
+			errs := errors.New("erreur lors de la lecture des données de lieux")
+			dialog.ShowError(errs, w)
 			return
 		}
 		
 		err = json.Unmarshal(locationBody, &locations)
 		if err != nil {
-			Locationslabel.SetText("Erreur lors de la décodage des données de lieux")
+			// Locationslabel.SetText("Erreur lors de la décodage des données de lieux")
+			errs := errors.New("erreur lors de la décodage des données de lieux")
+			dialog.ShowError(errs, w)
 			return
 		}
 
@@ -147,20 +162,26 @@ func main() {
 
 		DatesResp, err := http.Get("https://groupietrackers.herokuapp.com/api/dates")
 		if err != nil {
-			Dateslabel.SetText("Erreur lors du chargement des données des dates")
+			// Dateslabel.SetText("Erreur lors du chargement des données des dates")
+			errs := errors.New("erreur lors du chargement des données des dates")
+			dialog.ShowError(errs, w)
 			return
 		}
 		defer DatesResp.Body.Close()
 
 		DatesBody, err := io.ReadAll(DatesResp.Body)
 		if err != nil {
-			Dateslabel.SetText("Erreur lors de la lecture des données des dates")
+			// Dateslabel.SetText("Erreur lors de la lecture des données des dates")
+			errs := errors.New("erreur lors de la lecture des données des dates")
+			dialog.ShowError(errs, w)
 			return
 		}
 		
 		err = json.Unmarshal(DatesBody, &dates)
 		if err != nil {
-			Dateslabel.SetText("Erreur lors de la décodage des données des dates")
+			// Dateslabel.SetText("Erreur lors de la décodage des données des dates")
+			errs := errors.New("erreur lors de la décodage des données des dates")
+			dialog.ShowError(errs, w)
 			return
 		}
 		
@@ -169,20 +190,26 @@ func main() {
 	go func() {
 		RelationsResp, err := http.Get("https://groupietrackers.herokuapp.com/api/relation")
 		if err != nil {
-			Relationslabel.SetText("Erreur lors du chargement des données des relations")
+			// Relationslabel.SetText("Erreur lors du chargement des données des relations")
+			errs := errors.New("erreur lors du chargement des données des relations")
+			dialog.ShowError(errs, w)
 			return
 		}
 		defer RelationsResp.Body.Close()
 
 		RelationsBody, err := io.ReadAll(RelationsResp.Body)
 		if err != nil {
-			Relationslabel.SetText("Erreur lors de la lecture des données des relations")
+			// Relationslabel.SetText("Erreur lors de la lecture des données des relations")
+			errs := errors.New("erreur lors de la lecture des données des relations")
+			dialog.ShowError(errs, w)
 			return
 		}
 		
 		err = json.Unmarshal(RelationsBody, &relations)
 		if err != nil {
-			Relationslabel.SetText("Erreur lors de la décodage des données des relations")
+			// Relationslabel.SetText("Erreur lors de la décodage des données des relations")
+			errs := errors.New("erreur lors de la décodage des données des relations")
+			dialog.ShowError(errs, w)
 			return
 		}
 		
@@ -217,32 +244,39 @@ func main() {
 	Artiststext := canvas.NewText("Voici la liste de tout les artistes :", color.White)
 	Artiststext.Alignment = fyne.TextAlignCenter
 
-	resource, _ := fyne.LoadResourceFromURLString("")
-	Artistimage := canvas.NewImageFromResource(resource)
-	Artistimage.FillMode = canvas.ImageFillOriginal
-
 	content := container.NewVBox(
 		Artistslabel,
 		Artiststext,
 		returnline,
-		Artistimage,
-		Locationslabel,
-		Dateslabel,
-		Relationslabel,
+		// Locationslabel,
+		// Dateslabel,
+		// Relationslabel,
 	)
 
 	scroll := container.NewVScroll(container.New(layout.NewVBoxLayout(), content))
 
 	menuItem2 := fyne.NewMenuItem("Artists", func() {
+
 		for i, artist := range artistsData {
+
 			var artistLocations []string
 			var artistDates []string
 			// var artistRelations []string
 			var artistLocationsVille []string
 			var artistLocationsPays []string
+			
+			resource, _ := fyne.LoadResourceFromURLString("")
+			Artistimage := canvas.NewImageFromResource(resource)
+			Artistimage.FillMode = canvas.ImageFillOriginal
 			newLabel := widget.NewLabel("")
+			
 			buttons = append(buttons, widget.NewButton(artist, func(i int, artist string) func() {
 				return func() {
+
+					artistLocations = nil
+					artistDates = nil
+					artistLocationsVille = nil
+					artistLocationsPays = nil
 
 					for _, loc := range locations.Index {
 						if loc.ID == artists[i].ID {
@@ -276,12 +310,13 @@ func main() {
 					// }
 
 					newLabel.SetText("Membres : \n - " + strings.Join(artists[i].MEMBERS, "\n - ") + "\n" + "Date de création : " + fmt.Sprintf("%d", artists[i].CREA_DATE) + "\n" + "Premier album : " + artists[i].FIRST_ALBUM + "\n" + "Lieux : \n - Ville : " + strings.Join(artistLocationsVille, ", ") + "\n - Pays : " + strings.Join(artistLocationsPays, ", ") + "\n" + "Dates de concerts : " + strings.Join(artistDates, ", ") + "\n" + "Relations : " + artists[i].RELATION)
-					resource, _ := fyne.LoadResourceFromURLString(artists[i].IMAGE)
+					resource, _ = fyne.LoadResourceFromURLString(artists[i].IMAGE)
 					Artistimage.Resource = resource
 					Artistimage.Refresh()
 				}
 			}(i, artist)))
 			content.Add(buttons[i])
+			content.Add(Artistimage)
 			content.Add(newLabel)
 		}
 		w.SetContent(scroll)
@@ -308,15 +343,60 @@ func main() {
 
 	checkcheckbox := false
 	checkcheckcheckbox := false
+	checkcheckcheckcheckbox := false
+
+	var membersCheckboxes [7]*widget.Check
+
+	for i := 0; i < 7; i++ {
+		membersCheckboxes[i] = widget.NewCheck("", func(checked bool) {
+			// Mettre en œuvre la logique pour filtrer les artistes en fonction du nombre de membres sélectionné
+		})
+		membersCheckboxes[i].Text = strconv.Itoa(i + 1) + " membres"
+	}
+
+	members := container.NewHBox(
+		membersCheckboxes[0],
+		membersCheckboxes[1],
+		membersCheckboxes[2],
+		membersCheckboxes[3],
+		membersCheckboxes[4],
+		membersCheckboxes[5],
+		membersCheckboxes[6],
+	)
+
+	members.Hidden = true
+
+	checkbox3 := widget.NewCheck("Filtrer par nombre de membres", func(plot bool) {
+		if plot {
+			checkcheckcheckcheckbox = true
+			dialog.ShowInformation("Filtrer par nombre de membres", "Veuillez sélectionner le nombre de membres que vous souhaitez filtrer", w)
+			members.Show()
+		} else {
+			checkcheckcheckcheckbox = false
+			members.Hide()
+		}
+	})
+
+	var checkedMembers []int
 
 	filterbutton := widget.NewButton("Filtrer", func() {
+
 		newfilter.SetText("")
+		otherartistlabel.SetText("")
+
 		if checkcheckbox{
 			createdate, _ := strconv.Atoi(createlabel.Text)
 			filteredArtists = filterArtistsDate(artists, createdate)
 		}else if checkcheckcheckbox {
-		filteredArtists = filterArtistsMembers(artists, searchArtist.Text)
-		fmt.Println(filteredArtists)
+			filteredArtists = filterArtistsMembers(artists, searchArtist.Text)
+		}else if checkcheckcheckcheckbox {
+			checkedMembers = nil
+			for i, checkbox := range membersCheckboxes {
+				if checkbox.Checked {
+					checkedMembers = append(checkedMembers, i + 1)
+				}
+			}
+			filteredArtists = filterArtistsLenMembers(artists, checkedMembers)
 		}else {
 			filteredArtists = filterArtists(artistsData, searchArtist.Text)
 		}
@@ -324,7 +404,11 @@ func main() {
 
 		if len(filterlabel.Text) <= 654 {
 
-			otherartistlabel.SetText("Possible résultat de votre recherche : " + strings.Join(filteredArtists, ", ") + "\nEcrivez le nom complet de l'artiste pour voir ses informations si ce n'est pas le bon artiste.")
+			if len(filteredArtists) <= 0 {
+				otherartistlabel.SetText("Ecrivez le nom complet de l'artiste ou selectionner une autre date pour voir ses informations si ce n'est pas le bon artiste.")
+			} else {
+				otherartistlabel.SetText("Possible résultat de votre recherche : " + strings.Join(filteredArtists, ", ") )
+			}
 
 			for i := range artistsData {
 
@@ -371,6 +455,7 @@ func main() {
 	checkbox := widget.NewCheck("Filtrer par date de création", func(plot bool) {
 		if plot {
 			checkcheckbox = true
+			dialog.ShowInformation("Filtrer par date de création", "Veuillez sélectionner la date de création que vous souhaitez filtrer", w)
 			createlabel.Show()
 			slider.Show()
 		} else {
@@ -383,6 +468,7 @@ func main() {
 	checkbox2 := widget.NewCheck("Filtrer par nom de membre", func(plot bool) {
 		if plot {
 			checkcheckcheckbox = true
+			dialog.ShowInformation("Filtrer par nom de membre", "Veuillez écrire le nom du membre que vous souhaitez filtrer", w)
 		} else {
 			checkcheckcheckbox = false
 		}
@@ -396,6 +482,8 @@ func main() {
 		checkbox,
 		createlabel,
 		slider,
+		checkbox3,
+		members,
 		filterbutton,
 		otherartistlabel,
 		newfilter,
@@ -438,6 +526,19 @@ func filterArtistsMembers(artists []Artists, searchTerm string) []string {
 	for i := range artists {
 		for j := range artists[i].MEMBERS {
 			if strings.Contains(strings.ToLower(artists[i].MEMBERS[j]), strings.ToLower(searchTerm)) {
+				filteredArtists = append(filteredArtists, artists[i].NAME)
+				break
+			}
+		}
+	}
+	return filteredArtists
+}
+
+func filterArtistsLenMembers(artists []Artists, searchTerm []int) []string {
+	filteredArtists := []string{}
+	for i := range artists {
+		for _, nb := range searchTerm {
+			if len(artists[i].MEMBERS) == nb {
 				filteredArtists = append(filteredArtists, artists[i].NAME)
 				break
 			}
